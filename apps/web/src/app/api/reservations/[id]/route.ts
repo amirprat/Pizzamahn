@@ -36,7 +36,10 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json({
       data: {
         ...reservation,
-        areaTags: reservation.areaTags.map((item) => item.areaTag),
+        areaTags: reservation.areaTags.map(
+          (item: { areaTag: { id: number; name: string; slug: string } }) =>
+            item.areaTag,
+        ),
       },
     });
   } catch (error) {
@@ -167,7 +170,10 @@ export async function PUT(request: Request, context: RouteContext) {
     return NextResponse.json({
       data: {
         ...updated,
-        areaTags: updated.areaTags.map((item) => item.areaTag),
+        areaTags: updated.areaTags.map(
+          (item: { areaTag: { id: number; name: string; slug: string } }) =>
+            item.areaTag,
+        ),
       },
     });
   } catch (error) {
