@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@pizzamahn/db";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { reservationUpdateSchema } from "@/lib/validators/reservation";
@@ -105,7 +106,7 @@ export async function PUT(request: Request, context: RouteContext) {
       dataToUpdate.tagsSummary = newTags.join(", ");
     }
 
-    const updated = await prisma.$transaction(async (tx) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       if (newTags) {
         const slugs = newTags.map((tag) => slugify(tag));
 
