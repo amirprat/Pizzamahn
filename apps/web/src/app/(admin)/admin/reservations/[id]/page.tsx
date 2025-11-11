@@ -74,11 +74,13 @@ export default async function ReservationDetailPage({
             }),
           ),
         }}
-        areaTags={areaTags.map((tag) => ({
-          id: tag.id,
-          name: tag.name,
-          slug: tag.slug,
-        }))}
+        areaTags={areaTags.map(
+          (tag: { id: number; name: string; slug: string }) => ({
+            id: tag.id,
+            name: tag.name,
+            slug: tag.slug,
+          }),
+        )}
       />
     </div>
   );
