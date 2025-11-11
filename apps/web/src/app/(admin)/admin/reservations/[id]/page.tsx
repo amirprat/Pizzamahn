@@ -64,11 +64,15 @@ export default async function ReservationDetailPage({
           guests: reservation.guests,
           notes: reservation.notes ?? "",
           status: reservation.status,
-          tags: reservation.areaTags.map((tag) => ({
+          tags: reservation.areaTags.map(
+            (tag: {
+              areaTag: { id: number; name: string; slug: string };
+            }) => ({
             id: tag.areaTag.id,
             name: tag.areaTag.name,
             slug: tag.areaTag.slug,
-          })),
+            }),
+          ),
         }}
         areaTags={areaTags.map((tag) => ({
           id: tag.id,
