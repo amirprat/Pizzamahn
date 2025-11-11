@@ -11,6 +11,10 @@ type RouteContext = {
   }>;
 };
 
+type ReservationAreaTagWithArea = Prisma.ReservationAreaTagGetPayload<{
+  include: { areaTag: true };
+}>;
+
 export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
   const session = await auth();
@@ -116,7 +120,8 @@ export async function PUT(request: Request, context: RouteContext) {
         });
 
         const tagsToRemove = existingTagLinks.filter(
-          (link) => !slugs.includes(link.areaTag.slug),
+          (link: ReservationAreaTagWithArea) =>
+            !slugs.includes(link.areaTag.slug),
         );
 
         if (tagsToRemove.length > 0) {
@@ -124,7 +129,9 @@ export async function PUT(request: Request, context: RouteContext) {
             where: {
               reservationId: id,
               areaTagId: {
-                in: tagsToRemove.map((link) => link.areaTagId),
+                in: tagsToRemove.map(
+                  (link: ReservationAreaTagWithArea) => link.areaTagId,
+                ),
               },
             },
           });
