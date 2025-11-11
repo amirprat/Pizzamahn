@@ -11,9 +11,10 @@ type RouteContext = {
   }>;
 };
 
-type ReservationAreaTagWithArea = Prisma.ReservationAreaTagGetPayload<{
-  include: { areaTag: true };
-}>;
+type ReservationAreaTagWithArea = {
+  areaTag: { id: number; name: string; slug: string };
+  areaTagId: number;
+};
 
 export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
@@ -114,10 +115,10 @@ export async function PUT(request: Request, context: RouteContext) {
       if (newTags) {
         const slugs = newTags.map((tag) => slugify(tag));
 
-        const existingTagLinks = await tx.reservationAreaTag.findMany({
+        const existingTagLinks = (await tx.reservationAreaTag.findMany({
           where: { reservationId: id },
           include: { areaTag: true },
-        });
+        })) as ReservationAreaTagWithArea[];
 
         const tagsToRemove = existingTagLinks.filter(
           (link: ReservationAreaTagWithArea) =>
