@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import type { Prisma } from "@pizzamahn/db";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { reservationCreateSchema } from "@/lib/validators/reservation";
@@ -69,26 +68,28 @@ export async function GET(request: Request) {
               { createdAt: "desc" as const },
             ];
 
-    const [reservations, total] = await prisma.$transaction([
-      prisma.reservation.findMany({
-        where,
-        include: {
-          areaTags: {
-            include: {
-              areaTag: true,
-            },
+    const reservationQuery = prisma.reservation.findMany({
+      where,
+      include: {
+        areaTags: {
+          include: {
+            areaTag: true,
           },
         },
-        orderBy,
-        skip,
-        take: pageSize,
-      }),
-      prisma.reservation.count({ where }),
-    ]);
+      },
+      orderBy,
+      skip,
+      take: pageSize,
+    });
 
-    type ReservationWithArea = Prisma.ReservationGetPayload<{
-      include: { areaTags: { include: { areaTag: true } } };
-    }>;
+    const countQuery = prisma.reservation.count({ where });
+
+    type ReservationWithArea = Awaited<typeof reservationQuery>[number];
+
+    const [reservations, total] = (await prisma.$transaction([
+      reservationQuery,
+      countQuery,
+    ])) as [ReservationWithArea[], number];
 
     const formatted = reservations.map((reservation: ReservationWithArea) => ({
       ...reservation,
