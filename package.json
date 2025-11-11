@@ -1,0 +1,29 @@
+{
+  "name": "pizzamahn",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo for the pizzamahn.com rebuild.",
+  "keywords": [
+    "pizzamahn",
+    "nextjs",
+    "tailwind",
+    "prisma"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace web",
+    "build": "npm run build --workspace web",
+    "start": "npm run start --workspace web",
+    "lint": "npm run lint --workspace web",
+    "format": "npm run format --workspace web",
+    "test": "npm run test --workspace web"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.0.1"
+  }
+}

@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background-color: #ffffff;
+}
+
+body {
+  font-family: var(--font-madefor, "Wix Madefor Text", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+body,
+html {
+  min-height: 100%;
+}
+
+main {
+  outline: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+*:focus-visible {
+  outline: 3px solid #FF983B;
+  outline-offset: 3px;
+}
