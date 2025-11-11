@@ -25,6 +25,20 @@ function toCSV(data: Array<Record<string, string | number | null>>): string {
   return [headers.join(","), ...rows].join("\n");
 }
 
+type ReservationWithTags = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  date: Date;
+  time: string;
+  guests: number;
+  status: string;
+  notes: string | null;
+  createdAt: Date;
+  areaTags: Array<{ areaTag: { name: string } }>;
+};
+
 export async function GET() {
   const session = await auth();
 
@@ -33,7 +47,7 @@ export async function GET() {
   }
 
   try {
-    const reservations = await prisma.reservation.findMany({
+    const reservations = (await prisma.reservation.findMany({
       include: {
         areaTags: {
           include: {
@@ -42,9 +56,9 @@ export async function GET() {
         },
       },
       orderBy: [{ date: "desc" }, { createdAt: "desc" }],
-    });
+    })) as ReservationWithTags[];
 
-    const csvRows = reservations.map((reservation) => ({
+    const csvRows = reservations.map((reservation: ReservationWithTags) => ({
       id: reservation.id,
       name: reservation.name,
       email: reservation.email,
@@ -53,7 +67,9 @@ export async function GET() {
       time: reservation.time,
       guests: reservation.guests,
       status: reservation.status,
-      tags: reservation.areaTags.map((tag) => tag.areaTag.name).join("; "),
+      tags: reservation.areaTags
+        .map((tag: { areaTag: { name: string } }) => tag.areaTag.name)
+        .join("; "),
       notes: reservation.notes ?? "",
       createdAt: reservation.createdAt.toISOString(),
     }));
