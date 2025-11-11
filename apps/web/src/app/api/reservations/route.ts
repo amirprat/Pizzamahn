@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@pizzamahn/db";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { reservationCreateSchema } from "@/lib/validators/reservation";
@@ -85,9 +86,16 @@ export async function GET(request: Request) {
       prisma.reservation.count({ where }),
     ]);
 
-    const formatted = reservations.map((reservation) => ({
+    type ReservationWithArea = Prisma.ReservationGetPayload<{
+      include: { areaTags: { include: { areaTag: true } } };
+    }>;
+
+    const formatted = reservations.map((reservation: ReservationWithArea) => ({
       ...reservation,
-      areaTags: reservation.areaTags.map((item) => item.areaTag),
+      areaTags: reservation.areaTags.map(
+        (item: { areaTag: { id: number; name: string; slug: string } }) =>
+          item.areaTag,
+      ),
     }));
 
     return NextResponse.json({
