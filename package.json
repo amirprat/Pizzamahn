@@ -21,7 +21,8 @@
     "start": "npm run start --workspace web",
     "lint": "npm run lint --workspace web",
     "format": "npm run format --workspace web",
-    "test": "npm run test --workspace web"
+    "test": "npm run test --workspace web",
+    "postinstall": "npm run generate --workspace @pizzamahn/db"
   },
   "dependencies": {
     "@prisma/client": "^6.0.1"
