@@ -18,8 +18,12 @@ export async function fetchContactEmails(): Promise<ContactEmailMap> {
       where: { label: { in: contactEmailLabels } },
     });
 
+    type ContactEmailRecord = typeof records[number];
+
     return contactEmailLabels.reduce((acc, label) => {
-      const record = records.find((entry) => entry.label === label);
+      const record = records.find(
+        (entry: ContactEmailRecord) => entry.label === label,
+      );
       acc[label] = record?.email ?? DEFAULT_CONTACT_EMAIL;
       return acc;
     }, {} as ContactEmailMap);
