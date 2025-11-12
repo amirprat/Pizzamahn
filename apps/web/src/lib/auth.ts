@@ -1,5 +1,4 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
@@ -8,7 +7,7 @@ import Credentials from "next-auth/providers/credentials";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
-async function ensureAdminUser(): Promise<User> {
+async function ensureAdminUser() {
   const { ADMIN_EMAIL, ADMIN_PASSWORD } = env;
 
   const hashedEnvPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
