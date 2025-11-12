@@ -4,6 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { reservationCreateSchema } from "@/lib/validators/reservation";
 import { slugify } from "@/lib/utils";
 
+type ReservationAreaTagItem = {
+  areaTag: { id: number; name: string; slug: string };
+};
+
+type ReservationWithAreaTags = {
+  areaTags: ReservationAreaTagItem[];
+};
+
 export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
@@ -84,7 +92,8 @@ export async function GET(request: Request) {
 
     const countQuery = prisma.reservation.count({ where });
 
-    type ReservationWithArea = Awaited<typeof reservationQuery>[number];
+    type ReservationWithArea = Awaited<typeof reservationQuery>[number] &
+      ReservationWithAreaTags;
 
     const [reservations, total] = (await prisma.$transaction([
       reservationQuery,
@@ -94,8 +103,7 @@ export async function GET(request: Request) {
     const formatted = reservations.map((reservation: ReservationWithArea) => ({
       ...reservation,
       areaTags: reservation.areaTags.map(
-        (item: { areaTag: { id: number; name: string; slug: string } }) =>
-          item.areaTag,
+        (item: ReservationAreaTagItem) => item.areaTag,
       ),
     }));
 
@@ -135,7 +143,9 @@ export async function POST(request: Request) {
 
     const uniqueTags = Array.from(new Set(parsed.tags ?? []));
 
-    const reservation = await prisma.reservation.create({
+    const reservation: ReservationWithAreaTags &
+      Awaited<ReturnType<typeof prisma.reservation.create>> =
+      await prisma.reservation.create({
       data: {
         name: parsed.name,
         phone: parsed.phone,
@@ -175,7 +185,9 @@ export async function POST(request: Request) {
       {
         data: {
           ...reservation,
-          areaTags: reservation.areaTags.map((item) => item.areaTag),
+          areaTags: reservation.areaTags.map(
+            (item: ReservationAreaTagItem) => item.areaTag,
+          ),
         },
       },
       { status: 201 },
