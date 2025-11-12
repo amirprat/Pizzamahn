@@ -22,7 +22,8 @@
     "lint": "npm run lint --workspace web",
     "format": "npm run format --workspace web",
     "test": "npm run test --workspace web",
-    "postinstall": "npm run generate --workspace @pizzamahn/db"
+    "postinstall": "npm run generate --workspace @pizzamahn/db",
+    "typecheck": "npx tsc --noEmit -p apps/web/tsconfig.json"
   },
   "dependencies": {
     "@prisma/client": "^6.0.1"
